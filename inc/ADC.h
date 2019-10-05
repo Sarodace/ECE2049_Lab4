@@ -30,4 +30,10 @@ private:
     float degCPerBit;
 };
 
+class DAC
+{
+
+};
+
+
 #endif /* INC_ADC_H_ */
