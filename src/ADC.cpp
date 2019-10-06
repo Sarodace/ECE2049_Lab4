@@ -90,8 +90,8 @@ uint32_t ADC::getCurrentPot() {
 #pragma vector=TIMER2_A0_VECTOR
 __interrupt void ADC::TIMERA2ISR()
 {
-    globalCounter++;
-    globalClock++;
+//    globalCounter++;
+//    globalClock++;
     ADC12CTL0 |= (ADC12SC | ADC12ENC); // Start conversion
 }
 

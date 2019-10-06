@@ -11,10 +11,10 @@
 #include <main.h>
 
 // States utilized in main program state machine
-typedef enum State
+enum State
 {
-    WELCOME_SCREEN, WAIT_FOR_SELECTION, DC, SQAURE, SAWTOOTH, TRIANGLE
-} State;
+    WELCOME_SCREEN, WAIT_FOR_SELECTION, DC, SQUARE, SAWTOOTH, TRIANGLE
+};
 
 // Function prototypes
 void drawWelcome();
@@ -51,7 +51,7 @@ void main(void)
             state = WAIT_FOR_SELECTION;
             break;
         case WAIT_FOR_SELECTION:
-            switch (buttonPressed):
+            switch (buttonPressed)
             {
             case 1:
                 state = DC;
@@ -66,7 +66,7 @@ void main(void)
                 state = TRIANGLE;
                 break;
             }
-        }
+
         case DC:
             // Display DC value starting at 0v to VCC
         case SQUARE:
@@ -75,6 +75,8 @@ void main(void)
             // Display sawtooth wave going from 0v to V_CC with 75Hz
         case TRIANGLE:
             // Display triangle wave going from 0v to V_CC with 150Hz
+            break;
+        }
     }
 }
 
@@ -85,18 +87,18 @@ void drawWelcome()
     Graphics_clearDisplay(&g_sContext);                // Clear the display
 
     // Write some text to the display
-    Graphics_drawStringCentered(&g_sContext, "MSP430", AUTO_STRING_LENGTH, 48,
+    Graphics_drawStringCentered(&g_sContext, (uint8_t*)"MSP430", AUTO_STRING_LENGTH, 48,
                                 25, TRANSPARENT_TEXT);
-    Graphics_drawStringCentered(&g_sContext, "Function Generator", AUTO_STRING_LENGTH, 48, 35,
+    Graphics_drawStringCentered(&g_sContext, (uint8_t*)"Function Generator", AUTO_STRING_LENGTH, 48, 35,
     TRANSPARENT_TEXT);
 
-    Graphics_drawString(&g_sContext, "Button 1: DC", AUTO_STRING_LENGTH, 7,
+    Graphics_drawString(&g_sContext, (uint8_t*)"Button 1: DC", AUTO_STRING_LENGTH, 7,
                                 60, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, "Button 2: Square", AUTO_STRING_LENGTH, 7,
+    Graphics_drawString(&g_sContext, (uint8_t*)"Button 2: Square", AUTO_STRING_LENGTH, 7,
                                 70, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, "Button 3: Sawtooth", AUTO_STRING_LENGTH, 7,
+    Graphics_drawString(&g_sContext, (uint8_t*)"Button 3: Sawtooth", AUTO_STRING_LENGTH, 7,
                                 80, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, "Button 4: Triangle", AUTO_STRING_LENGTH, 7,
+    Graphics_drawString(&g_sContext, (uint8_t*)"Button 4: Triangle", AUTO_STRING_LENGTH, 7,
                                 80, TRANSPARENT_TEXT);
 
     // Draw a box around everything because it looks nice
