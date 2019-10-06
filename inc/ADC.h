@@ -15,25 +15,11 @@ class ADC
 public:
     ADC();
     virtual ~ADC();
-    float getCurrentTempF();
-    float getCurrentTempC();
-    uint32_t getCurrentPot();
+    uint16_t getCurrentPot();
 private:
     static __interrupt void ADC12ISR();
-    static __interrupt void TIMERA2ISR();
-    static uint32_t rawTempReadings[10];
-    static uint32_t averagedTempReadings[30];
-    static uint32_t rawPotReading;
-    static uint32_t readingIndex;
-    uint16_t tempCal30C;
-    uint16_t tempCal85C;
-    float degCPerBit;
+    static __interrupt void TIMERISR();
+    static uint16_t rawPotReading;
 };
-
-class DAC
-{
-
-};
-
 
 #endif /* INC_ADC_H_ */
