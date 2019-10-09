@@ -27,7 +27,7 @@ ADC::ADC()
     ADC12MCTL0 = ADC12SREF_0 | ADC12INCH_0 | ADC12EOS; // Use 3.3V ref (VCC)
     P6SEL |= BIT0; // Set P6.0 to function mode to enable use of A0
 
-    // Configure Timer A2
+    // Configure Timer B0, used to schedule ADC readings independent of the DAC output (Timer A2)
     TB0CTL = TASSEL_1 + ID_0 + MC_1;
     TB0CCR0 = 328; // = ~100 Hz
     TB0CCTL0 = CCIE; // TB0CCR0 interrupt enabled
@@ -43,8 +43,8 @@ uint16_t ADC::getCurrentPot() {
     return rawPotReading;
 }
 
-// Configure the Timer A2 ISR
-#pragma vector=TIMER2_A0_VECTOR
+// Configure the Timer B0 ISR
+#pragma vector=TIMER2_B0_VECTOR
 __interrupt void ADC::TIMERISR()
 {
 //    globalCounter++;
@@ -52,7 +52,7 @@ __interrupt void ADC::TIMERISR()
     ADC12CTL0 |= (ADC12SC | ADC12ENC); // Start conversion
 }
 
-// Configure the temperature and potentiometer ISR
+// Configure the potentiometer ISR
 #pragma vector=ADC12_VECTOR
 __interrupt void ADC::ADC12ISR() {
     // Move results to static

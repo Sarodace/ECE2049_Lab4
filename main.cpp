@@ -40,6 +40,7 @@ void main(void)
 
     ADC* adc = new ADC();
     DAC* dac = new DAC();
+    uint32_t pot;
 
     _BIS_SR(GIE); // Global interrupt enable
 
@@ -47,6 +48,7 @@ void main(void)
     while (1)
     {
         buttonPressed = getButtonState();
+        pot = adc->getCurrentPot();
 
         switch (state)
         {
@@ -74,15 +76,19 @@ void main(void)
             break;
         case DC:
             // Display DC value starting at 0v to VCC
-            uint16_t pot = (uint16_t) adc->getCurrentPot();
-            dac->SetOutput(pot);
+            dac->SetDC(pot);
             break;
         case SQUARE:
             // Display square wave going from 0v to V_CC with 150Hz
+            dac->SetSquareWave(pot);
+            break;
         case SAWTOOTH:
             // Display sawtooth wave going from 0v to V_CC with 75Hz
+            dac->SetSawtoothWave();
+            break;
         case TRIANGLE:
             // Display triangle wave going from 0v to V_CC with 150Hz
+            dac->SetTriangleWave(100 + (pot * 900) / 4095); // Frequency ranges from 100Hz at pot = 0 to 1kHz when pot = 4095
             break;
         }
     }
