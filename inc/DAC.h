@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 enum DACMode {
+    DAC_NONE,
     DAC_DC,
     DAC_SQUARE,
     DAC_SAWTOOTH,
@@ -27,15 +28,15 @@ public:
     void SetSawtoothWave();
     void SetTriangleWave(uint32_t frequency);
 private:
-    void SetOutput(uint16_t amplitude_code);
-    void WaitForTransmission(void);
-    void ToggleLDAC(void);
+    static void SetOutput(uint16_t amplitude_code);
+    static void WaitForTransmission(void);
+    static void ToggleLDAC(void);
     void ConfigTimer(uint32_t frequency);
-    uint16_t lastCode;
-    DACMode lastMode;
+    static uint16_t lastCode;
+    static DACMode lastMode;
 
-    const uint16_t maxCode = 4095;
-    const uint16_t stepCount = 100; // TODO: Lower this if it's too many steps
+    static const uint32_t maxCode = 4095;
+    static const uint32_t stepCount = 20; // TODO: Lower this if it's too many steps
 
     static void TimerISR(void);
     static uint64_t clock;

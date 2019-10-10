@@ -14,13 +14,14 @@
 // States utilized in main program state machine
 enum State
 {
-    WELCOME_SCREEN, WAIT_FOR_SELECTION, DC, SQUARE, SAWTOOTH, TRIANGLE
+    WELCOME_SCREEN, WAIT_FOR_SELECTION, DC, SQUARE, SAWTOOTH, TRIANGLE, TEST
 };
 
 // Function prototypes
 void drawWelcome();
 void configButtons();
 unsigned char getButtonState();
+float readDAC(ADC*);
 
 // Program entry point
 void main(void)
@@ -33,7 +34,7 @@ void main(void)
     WDTCTL = WDTPW | WDTHOLD; // Stop watchdog timer
 
     // Set up and configure peripherals and I/O
-    initLeds();
+//    initLeds();
     configDisplay();
     configButtons();
     configKeypad();
@@ -50,6 +51,27 @@ void main(void)
         buttonPressed = getButtonState();
         pot = adc->getCurrentPot();
 
+        if (buttonPressed & BIT0)
+        {
+            if(state == DC)
+            {
+                readDAC(adc);
+            }
+            state = DC;
+        }
+        else if (buttonPressed & BIT1)
+        {
+            state = SQUARE;
+        }
+        else if (buttonPressed & BIT2)
+        {
+            state = SAWTOOTH;
+        }
+        else if (buttonPressed & BIT3)
+        {
+            state = TRIANGLE;
+        }
+
         switch (state)
         {
         case WELCOME_SCREEN:
@@ -57,22 +79,7 @@ void main(void)
             state = WAIT_FOR_SELECTION;
             break;
         case WAIT_FOR_SELECTION:
-            if (buttonPressed & BIT0)
-            {
-                state = DC;
-            }
-            else if (buttonPressed & BIT1)
-            {
-                state = SQUARE;
-            }
-            else if (buttonPressed & BIT2)
-            {
-                state = SAWTOOTH;
-            }
-            else if (buttonPressed & BIT3)
-            {
-                state = TRIANGLE;
-            }
+            __no_operation();
             break;
         case DC:
             // Display DC value starting at 0v to VCC
@@ -88,7 +95,7 @@ void main(void)
             break;
         case TRIANGLE:
             // Display triangle wave going from 0v to V_CC with 150Hz
-            dac->SetTriangleWave(100 + (pot * 900) / 4095); // Frequency ranges from 100Hz at pot = 0 to 1kHz when pot = 4095
+            dac->SetTriangleWave(100 + (uint32_t)((pot * 400.0) / 4095.0)); // Frequency ranges from 100Hz at pot = 0 to 1kHz when pot = 4095
             break;
         }
     }
@@ -102,25 +109,24 @@ void drawWelcome()
 
 // Write some text to the display
     Graphics_drawStringCentered(&g_sContext, (uint8_t*) "MSP430",
-    AUTO_STRING_LENGTH,
-                                48, 25, TRANSPARENT_TEXT);
-    Graphics_drawStringCentered(&g_sContext, (uint8_t*) "Function Generator",
+    AUTO_STRING_LENGTH, 48, 25, TRANSPARENT_TEXT);
+    Graphics_drawStringCentered(&g_sContext, (uint8_t*) "Function Gen",
     AUTO_STRING_LENGTH,
                                 48, 35,
                                 TRANSPARENT_TEXT);
 
-    Graphics_drawString(&g_sContext, (uint8_t*) "Button 1: DC",
+    Graphics_drawString(&g_sContext, (uint8_t*) "B1: DC",
     AUTO_STRING_LENGTH,
-                        7, 60, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, (uint8_t*) "Button 2: Square",
+                        10, 48, TRANSPARENT_TEXT);
+    Graphics_drawString(&g_sContext, (uint8_t*) "B2: Square",
     AUTO_STRING_LENGTH,
-                        7, 70, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, (uint8_t*) "Button 3: Sawtooth",
+                        10, 58, TRANSPARENT_TEXT);
+    Graphics_drawString(&g_sContext, (uint8_t*) "B3: Sawtooth",
     AUTO_STRING_LENGTH,
-                        7, 80, TRANSPARENT_TEXT);
-    Graphics_drawString(&g_sContext, (uint8_t*) "Button 4: Triangle",
+                        10, 68, TRANSPARENT_TEXT);
+    Graphics_drawString(&g_sContext, (uint8_t*) "B4: Triangle",
     AUTO_STRING_LENGTH,
-                        7, 80, TRANSPARENT_TEXT);
+                        10, 78, TRANSPARENT_TEXT);
 
 // Draw a box around everything because it looks nice
     Graphics_Rectangle box = { .xMin = 5, .xMax = 91, .yMin = 5, .yMax = 91 };
@@ -174,4 +180,10 @@ uint8_t getButtonState()
     if (~P7IN & BIT4)
         ret |= BIT3;    // Button 3
     return ret;
+}
+
+float readDAC(ADC* adc) {
+    uint16_t ADC_code = adc->getCurrentDAC();
+    float DAC_output = ADC_code * 3.3 / 4095.0;
+    return DAC_output;
 }

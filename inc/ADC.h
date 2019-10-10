@@ -16,10 +16,12 @@ public:
     ADC();
     virtual ~ADC();
     uint16_t getCurrentPot();
+    uint16_t getCurrentDAC();
 private:
     static __interrupt void ADC12ISR();
     static __interrupt void TIMERISR();
     static uint16_t rawPotReading;
+    static uint16_t rawDACReading;
 };
 
 #endif /* INC_ADC_H_ */
